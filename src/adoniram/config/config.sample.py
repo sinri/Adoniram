@@ -1,4 +1,4 @@
-adoniram_config = {
+adoniram_config_in_env = {
     'server': {
         'host': '127.0.0.1',
         'port': 4567,

@@ -1,4 +1,5 @@
 import json
+from abc import abstractmethod
 from typing import Optional
 
 from nehushtan.helper.CommonHelper import CommonHelper
@@ -11,7 +12,6 @@ from adoniram.exception.BadMessageError import BadMessageError
 from adoniram.exception.ServerConnectionLost import ServerConnectionLost
 from adoniram.message.BaseRequestMessage import BaseRequestMessage
 from adoniram.message.BaseResponseMessage import BaseResponseMessage
-from adoniram.message.request.RequestMessageAsPing import RequestMessageAsPing
 from adoniram.message.request.RequestMessageAsRegisterProcessor import RequestMessageAsRegisterProcessor
 from adoniram.message.request.RequestMessageAsUnregisterProcessor import RequestMessageAsUnregisterProcessor
 from adoniram.message.response.ResponseMessageAsDone import ResponseMessageAsDone
@@ -24,7 +24,6 @@ class AdoniramProcesserClient(NehushtanTCPSocketClient):
         self.__processor_name = name
         self.__logger: NehushtanFileLogger = adoniram_make_server_logger(f'Processor-{name}')
         self.__registered = False
-        self.__process_routine_count = 0
 
         # local debug
         self.__logger.print_higher_than_this_level = NehushtanLogging.INFO
@@ -41,16 +40,27 @@ class AdoniramProcesserClient(NehushtanTCPSocketClient):
         :return:
         """
 
-        self.__process_routine_count += 1
-        self.__logger.info('process_routine_count increased to be', self.__process_routine_count)
-
         if not self.__registered:
             return RequestMessageAsRegisterProcessor().build(self.__processor_name)
-        elif self.__process_routine_count > 10:
-            return None
         else:
-            # now just ping
-            return RequestMessageAsPing().build(self.__processor_name)
+            while not self.should_processer_stop():
+                return self.make_request_for_seeking_next_task_from_server()
+
+    @abstractmethod
+    def make_request_for_seeking_next_task_from_server(self) -> BaseRequestMessage:
+        """
+        Send a special request to server, try to get a task to do
+        :return:
+        """
+        pass
+
+    @abstractmethod
+    def should_processer_stop(self) -> bool:
+        """
+        Processer should tell server to unregister now?
+        :return:
+        """
+        pass
 
     def _handle_response(self, response_message: BaseResponseMessage):
         if response_message.read_code() == ResponseMessageAsDone.CODE:
@@ -59,11 +69,21 @@ class AdoniramProcesserClient(NehushtanTCPSocketClient):
                 self.__registered = True
                 self.__logger.notice('PROCESSOR REGISTERED')
             else:
+                self.handle_server_response_for_task_done(response_message)
                 # other, ping
-                self.__logger.notice('PONG!')
+                # self.__logger.notice('PONG!')
         else:
             # error
             self.__logger.error('REQUEST FAILED', response_message.read(('data',)))
+
+    @abstractmethod
+    def handle_server_response_for_task_done(self, response_message: BaseResponseMessage):
+        """
+        When a task is done by server (no matter error or not)
+        :param response_message:
+        :return:
+        """
+        pass
 
     def handle_client_conneciton(self):
         while True:

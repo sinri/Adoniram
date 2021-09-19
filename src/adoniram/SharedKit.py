@@ -1,13 +1,19 @@
 from nehushtan.helper.CommonHelper import CommonHelper
 from nehushtan.logger.NehushtanFileLogger import NehushtanFileLogger
 
-from adoniram.config.config import adoniram_config
 from adoniram.distributor.ProcessorRegistration import ProcessorRegistration
 
 shared_processor_registration: ProcessorRegistration
+adoniram_config: dict
+
+
+def adoniram_load_config(config_dict: dict):
+    global adoniram_config
+    adoniram_config = config_dict
 
 
 def adoniram_read_config(keychain: tuple, default=None):
+    global adoniram_config
     return CommonHelper.read_dictionary(adoniram_config, keychain, default)
 
 

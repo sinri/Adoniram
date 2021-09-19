@@ -39,13 +39,13 @@ class AdoniramDistributorServer(NehushtanTCPSocketServer):
         """
 
         # message types
-        # 0. stop the server
-        # 1. register a new processor
-        # 2. unregister a new processor
+        # 0. stop the server - done
+        # 1. register a new processor - done
+        # 2. unregister a new processor - done
         # 3. let a processor do some job
         #   3.1 and wait for its response
         #   3.2 or let it stop on halfway
-        # 4. heartbeat
+        # 4. heartbeat i.e. PING PONG = done
 
         processor_name = None
 
