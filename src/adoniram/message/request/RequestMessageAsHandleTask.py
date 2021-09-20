@@ -12,6 +12,9 @@ class RequestMessageAsHandleTask(BaseRequestMessage):
     This is a mistake design
     """
 
+    def defined_request_action(self) -> str:
+        return 'HandleTask'
+
     def handle_request_for_response(self) -> BaseResponseMessage:
         # get the full path for task handler class (with namespace)
         task_handler_class_path = self.read(('task_handler_class',))

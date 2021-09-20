@@ -28,6 +28,9 @@ class AdoniramProcesserClient(NehushtanTCPSocketClient):
         # local debug
         self.__logger.print_higher_than_this_level = NehushtanLogging.INFO
 
+    def get_logger(self):
+        return self.__logger
+
     def get_processor_name(self):
         return self.__processor_name
 

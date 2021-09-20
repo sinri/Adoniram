@@ -13,12 +13,13 @@ class BaseRequestMessage(BaseMessage):
     FORMAT {"action":"XXX","processor_name":"YYY",...}
     """
 
-    def defined_request_action(self):
+    @abstractmethod
+    def defined_request_action(self) -> str:
         """
         FOR CLIENt
         :return:
         """
-        return ''
+        pass
 
     def build(self, processor_name: str, **kwargs):
         """
@@ -41,13 +42,13 @@ class BaseRequestMessage(BaseMessage):
     def read_action(self):
         x = self.read(('action',))
         if not x:
-            raise BadMessageError('Message with Empty Action', self.__raw)
+            raise BadMessageError('Message with Empty Action', self.get_message_as_bytes())
         return x
 
     def read_processor_name(self):
         x = self.read(('processor_name',))
         if not x:
-            raise BadMessageError('Message with Empty Processor Name', self.__raw)
+            raise BadMessageError('Message with Empty Processor Name', self.get_message_as_bytes())
         return x
 
     @abstractmethod

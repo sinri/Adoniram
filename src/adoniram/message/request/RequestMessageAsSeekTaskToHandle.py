@@ -8,6 +8,9 @@ from adoniram.task.BaseTaskSeeker import BaseTaskSeeker
 
 
 class RequestMessageAsSeekTaskToHandle(BaseRequestMessage):
+    def defined_request_action(self) -> str:
+        return 'SeekTaskToHandle'
+
     def handle_request_for_response(self) -> BaseResponseMessage:
         # get the full path for task handler class (with namespace)
         task_seeker_class_path = self.read(('task_seeker_class',))
