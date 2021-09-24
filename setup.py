@@ -5,8 +5,8 @@ with open("README.md", "r") as fh:
 
 setup(
     name='adoniram',
-    version='0.0.1',
-    packages=find_packages(),
+    version='0.0.6',
+    packages=find_packages(where='src'),
     url='https://github.com/sinri/Adoniram',
     license='MIT',
     author='Sinri Edogawa',
@@ -21,6 +21,7 @@ setup(
         "Operating System :: POSIX",
         "Operating System :: MacOS :: MacOS X",
     ],
+    package_dir={"": "src"},
     install_requires=[
         'nehushtan~=0.4.18',
     ]

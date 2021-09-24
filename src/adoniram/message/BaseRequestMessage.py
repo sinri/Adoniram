@@ -71,4 +71,4 @@ class BaseRequestMessage(BaseMessage):
             response = self.handle_request_for_response()
             response.respond_to_client(connection)
         except Exception as e:
-            raise HandleMessageError(e.__str__()) from e
+            raise HandleMessageError(f'[{e.__class__}] {e}') from e

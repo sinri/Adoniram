@@ -19,7 +19,7 @@ class BaseTaskHandler:
     def get_task_handle_result(self):
         return self.__task_handle_result
 
-    def set_task_handle_result(self, task_handle_result):
+    def set_task_handle_result(self, task_handle_result: bool):
         self.__task_handle_result = task_handle_result
 
     def get_task_handle_feedback(self):

@@ -102,12 +102,13 @@ class AdoniramDistributorServer(NehushtanTCPSocketServer):
 
                     except HandleMessageError as e:
                         ResponseMessageAsRequestHandleError(e.__str__()).respond_to_client(connection)
-                        self.__logger.error(f"RESPONSE AS HandleMessageError: {e}")
+                        self.__logger.exception(f"RESPONSE AS HandleMessageError [{e.__class__}]", e)
                 except BadMessageError as e:
                     # notify client, ERROR
                     ResponseMessageAsRequestFormatError(e.__str__()).respond_to_client(connection)
-                    self.__logger.error(f"RESPONSE AS BadMessageError: {e}")
+                    self.__logger.exception(f"RESPONSE AS BadMessageError [{e.__class__}]", e)
         except ProcessorConnectionLost:
             self.__logger.critical('ProcessorConnectionLost', processor_name)
+            adoniram_get_shared_processor_registration().unregister(processor_name)
 
         self.__logger.notice('HERE THREAD ENDS', {'thread': threading.current_thread().name})

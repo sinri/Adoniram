@@ -23,9 +23,11 @@ class ProcessorRegistration:
 
     def register(self, name: str, host, port):
         if self.__lock.acquire(blocking=True, timeout=5):
+
+            processor_name_conflict = False
             try:
                 _ = self.__processor_dict[name]
-                raise ProcessorNameConflictError(name)
+                processor_name_conflict = True
             except KeyError:
                 self.__processor_dict[name] = {
                     'host': host,
@@ -34,11 +36,15 @@ class ProcessorRegistration:
                 }
 
             self.__lock.release()
+
+            if processor_name_conflict:
+                raise ProcessorNameConflictError(name)
         else:
             raise ProcessorRegistrationLocked()
 
     def unregister(self, name: str):
         if self.__lock.acquire(blocking=True, timeout=5):
+            processor_not_registered = False
             try:
                 x = self.__processor_dict[name]
 
@@ -48,8 +54,11 @@ class ProcessorRegistration:
 
                 del self.__processor_dict[name]
             except KeyError:
-                raise ProcessorNotRegisteredError(name)
+                processor_not_registered = True
 
             self.__lock.release()
+
+            if processor_not_registered:
+                raise ProcessorNotRegisteredError(name)
         else:
             raise ProcessorRegistrationLocked()

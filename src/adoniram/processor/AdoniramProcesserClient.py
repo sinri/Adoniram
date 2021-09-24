@@ -9,6 +9,7 @@ from nehushtan.socket.NehushtanTCPSocketClient import NehushtanTCPSocketClient
 
 from adoniram.SharedKit import adoniram_make_server_logger
 from adoniram.exception.BadMessageError import BadMessageError
+from adoniram.exception.ProcessorNameConflictError import ProcessorNameConflictError
 from adoniram.exception.ServerConnectionLost import ServerConnectionLost
 from adoniram.message.BaseRequestMessage import BaseRequestMessage
 from adoniram.message.BaseResponseMessage import BaseResponseMessage
@@ -78,6 +79,9 @@ class AdoniramProcesserClient(NehushtanTCPSocketClient):
         else:
             # error
             self.__logger.error('REQUEST FAILED', response_message.read(('data',)))
+            if not self.__registered:
+                # CANNOT REGISTER, EXIT
+                raise ProcessorNameConflictError(self.__processor_name)
 
     @abstractmethod
     def handle_server_response_for_task_done(self, response_message: BaseResponseMessage):
